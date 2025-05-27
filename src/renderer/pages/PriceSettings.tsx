@@ -1,60 +1,73 @@
 import React, { useState, useEffect } from 'react'
-
-interface PriceItem {
-  id: number
-  name: string
-  price: number
-}
+import { storageService, PriceItem } from '../services/storage'
 
 const PriceSettings: React.FC = () => {
   const [items, setItems] = useState<PriceItem[]>([])
   const [newItem, setNewItem] = useState({ name: '', price: '' })
   const [editingId, setEditingId] = useState<number | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  // 模拟远程数据读取
-  const readDataFromRemote = async () => {
-    // TODO: 实现远程数据读取
-    return []
-  }
-
-  // 模拟远程数据保存
-  const setDataToRemote = async (data: PriceItem[]) => {
-    // TODO: 实现远程数据保存
+  // 从本地文件读取数据
+  const loadData = async () => {
+    try {
+      const data = await storageService.readData()
+      setItems(data)
+    } catch (error) {
+      console.error('Failed to load data:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
-    readDataFromRemote().then(data => setItems(data))
+    loadData()
   }, [])
 
   const handleAdd = async () => {
     if (!newItem.name || !newItem.price) return
 
-    const newData = [...items, {
-      id: Date.now(),
-      name: newItem.name,
-      price: Number(newItem.price)
-    }]
+    try {
+      const newData = [...items, {
+        id: Date.now(),
+        name: newItem.name,
+        price: Number(newItem.price)
+      }]
 
-    await setDataToRemote(newData)
-    setItems(newData)
-    setNewItem({ name: '', price: '' })
+      await storageService.writeData(newData)
+      setItems(newData)
+      setNewItem({ name: '', price: '' })
+    } catch (error) {
+      console.error('Failed to add item:', error)
+    }
   }
 
   const handleDelete = async (id: number) => {
-    const newData = items.filter(item => item.id !== id)
-    await setDataToRemote(newData)
-    setItems(newData)
+    try {
+      const newData = items.filter(item => item.id !== id)
+      await storageService.writeData(newData)
+      setItems(newData)
+    } catch (error) {
+      console.error('Failed to delete item:', error)
+    }
   }
 
   const handleEdit = async (id: number, newName: string, newPrice: string) => {
-    const newData = items.map(item =>
-      item.id === id
-        ? { ...item, name: newName, price: Number(newPrice) }
-        : item
-    )
-    await setDataToRemote(newData)
-    setItems(newData)
-    setEditingId(null)
+    try {
+      const newData = items.map(item =>
+        item.id === id
+          ? { ...item, name: newName, price: Number(newPrice) }
+          : item
+      )
+      await storageService.writeData(newData)
+      setItems(newData)
+      setEditingId(null)
+    } catch (error) {
+      console.error('Failed to edit item:', error)
+    }
+  }
+
+  if (loading) {
+    return <div>加载中...</div>
   }
 
   return (

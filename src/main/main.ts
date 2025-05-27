@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, globalShortcut } from 'electron'
 import * as path from 'path'
 import isDev from 'electron-is-dev'
+require('@electron/remote/main').initialize()
 
 let mainWindow: BrowserWindow | null = null
 
@@ -13,6 +14,8 @@ function createWindow() {
       contextIsolation: false
     }
   })
+
+  require('@electron/remote/main').enable(mainWindow.webContents)
 
   if (isDev) {
     mainWindow.loadURL('http://localhost:5173')

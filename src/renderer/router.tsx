@@ -1,9 +1,10 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createHashRouter } from 'react-router-dom'
 import App from './App'
 import Home from './pages/Home'
-import About from './pages/About'
+import PriceSettings from './pages/PriceSettings'
+import ExcelSettings from './pages/ExcelSettings'
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: '/',
     element: <App />,
@@ -13,8 +14,12 @@ const router = createBrowserRouter([
         element: <Home />
       },
       {
-        path: 'about',
-        element: <About />
+        path: 'price-settings',
+        element: <PriceSettings />
+      },
+      {
+        path: 'excel-settings',
+        element: <ExcelSettings />
       }
     ]
   }

@@ -1,13 +1,13 @@
 import React from 'react'
-import { Link, Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
+import NavigationBar from './components/NavigationBar.tsx'
+
+
 
 const App: React.FC = () => {
   return (
     <div className="app">
-      <nav>
-        <Link to="/">Home</Link>
-        <Link to="/about">About</Link>
-      </nav>
+      <NavigationBar />
       <main>
         <Outlet />
       </main>

@@ -10,5 +10,10 @@ export default defineConfig({
       '@': resolve(__dirname, './src')
     },
     extensions: ['.tsx', '.ts', '.js', '.jsx']
+  },
+  server: {
+    port: 5173,
+    host: true,
+    strictPort: true // 如果端口被占用，则会抛出错误而不是尝试下一个可用端口
   }
 }) 

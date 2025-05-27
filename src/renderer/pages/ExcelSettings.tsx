@@ -1,9 +1,17 @@
 import React from 'react'
+import { excelUtils } from '../utils/excel'
 
 const ExcelSettings: React.FC = () => {
-  const handleImport = () => {
-    // TODO: 实现Excel导入功能
-    console.log('导入Excel')
+  const handleImport = async () => {
+    try {
+      const data = await excelUtils.getTableData()
+      // 遍历并打印每一行数据
+      data.forEach((row, index) => {
+        console.log(`Row ${index + 1}:`, row)
+      })
+    } catch (error) {
+      console.error('Failed to import Excel:', error)
+    }
   }
 
   const handleExport = () => {

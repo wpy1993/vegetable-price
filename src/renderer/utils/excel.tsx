@@ -3,15 +3,20 @@ const remote = require('@electron/remote')
 const { dialog } = remote
 const fs = remote.require('fs')
 
+interface CellData {
+  value: any;
+  address: string;  // 例如: 'A1', 'B2' 等
+  row: number;      // 行号（从1开始）
+  col: string;      // 列标识（A, B, C...）
+}
+
 class ExcelUtils {
-  async getTableData(): Promise<any[]> {
+  async getTableData(): Promise<CellData[]> {
     try {
       // 打开文件选择对话框
       const result = await dialog.showOpenDialog({
         properties: ['openFile'],
-        filters: [
-          { name: 'Excel Files', extensions: ['xlsx', 'xls'] }
-        ]
+        filters: [{ name: 'Excel Files', extensions: ['xlsx', 'xls'] }]
       })
 
       if (result.canceled || result.filePaths.length === 0) {
@@ -21,41 +26,38 @@ class ExcelUtils {
       // 读取文件内容
       const filePath = result.filePaths[0]
       const fileData = fs.readFileSync(filePath)
-
-      // 使用二进制数据创建工作簿
       const workbook = XLSX.read(fileData, { type: 'buffer' })
 
       // 获取第一个工作表
       const firstSheetName = workbook.SheetNames[0]
       const worksheet = workbook.Sheets[firstSheetName]
 
-      // 处理合并单元格
-      if (worksheet['!merges']) {
-        worksheet['!merges'].forEach(merge => {
-          // 获取合并区域的值（通常是左上角单元格的值）
-          const topLeftCell = XLSX.utils.encode_cell({ r: merge.s.r, c: merge.s.c })
-          const value = worksheet[topLeftCell]?.v
+      // 获取工作表的有效范围
+      const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1')
+      const cells: CellData[] = []
 
-          // 将值复制到合并区域的每个单元格
-          for (let row = merge.s.r; row <= merge.e.r; row++) {
-            for (let col = merge.s.c; col <= merge.e.c; col++) {
-              const cellAddress = XLSX.utils.encode_cell({ r: row, c: col })
-              if (!worksheet[cellAddress]) {
-                worksheet[cellAddress] = { t: 's', v: value }
-              }
-            }
+      // 遍历每个单元格
+      for (let R = range.s.r; R <= range.e.r; ++R) {
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+          // 获取单元格地址（例如：'A1', 'B2'）
+          const cellAddress = XLSX.utils.encode_cell({ r: R, c: C })
+          const cell = worksheet[cellAddress]
+
+          if (cell) {
+            // 获取列标识（A, B, C...）
+            const colLetter = XLSX.utils.encode_col(C)
+
+            cells.push({
+              value: cell.v, // 单元格的值
+              address: cellAddress,
+              row: R + 1, // 转换为1-based行号
+              col: colLetter
+            })
           }
-        })
+        }
       }
 
-      // 将工作表转换为JSON数组，设置defval确保空单元格有值
-      const data = XLSX.utils.sheet_to_json(worksheet, {
-        defval: '', // 空单元格的默认值
-        raw: false, // 返回格式化的字符串而不是原始类型
-        blankrows: false // 忽略空行
-      })
-
-      return data
+      return cells
     } catch (error) {
       console.error('Error reading Excel file:', error)
       throw error

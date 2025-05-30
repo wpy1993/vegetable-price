@@ -4,10 +4,30 @@ import { excelUtils } from '../utils/excel'
 const ExcelSettings: React.FC = () => {
   const handleImport = async () => {
     try {
-      const data = await excelUtils.getTableData()
-      // 遍历并打印每一行数据
-      data.forEach((row, index) => {
-        console.log(`Row ${index + 1}:`, row)
+      const cells = await excelUtils.getTableData()
+
+      // 按行号和列标识排序
+      const sortedCells = cells.sort((a, b) => {
+        if (a.row !== b.row) {
+          return a.row - b.row
+        }
+        return a.col.localeCompare(b.col)
+      })
+
+      console.log('sortedCells', sortedCells)
+
+      // 打印每个单元格的信息
+      sortedCells.forEach(cell => {
+        console.log(
+          `单元格 ${cell.address} (${cell.col}列, 第${cell.row}行): ${cell.value}`
+        )
+      })
+
+      // 示例：获取特定列的数据
+      const columnB = cells.filter(cell => cell.col === 'B')
+      console.log('\nB列的数据:')
+      columnB.forEach(cell => {
+        console.log(`B${cell.row}: ${cell.value}`)
       })
     } catch (error) {
       console.error('Failed to import Excel:', error)

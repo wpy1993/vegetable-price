@@ -1,16 +1,20 @@
 {
   "name": "electron-react",
   "version": "1.0.0",
-  "main": "dist/main/main.js",
+  "description": "Electron React TypeScript App",
+  "author": "wplay",
+  "main": "dist/main.js",
   "license": "MIT",
   "scripts": {
     "start": "electron .",
     "dev": "concurrently \"yarn dev:vite\" \"yarn dev:electron\"",
     "dev:vite": "vite",
     "dev:electron": "tsc -p tsconfig.electron.json && electron .",
-    "build": "tsc -p tsconfig.electron.json && vite build",
+    "clean": "rimraf dist release",
+    "build": "yarn clean && tsc -p tsconfig.electron.json && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "pack:win": "yarn build && electron-builder --win --x64"
   },
   "dependencies": {
     "@electron/remote": "^2.1.2",
@@ -33,6 +37,31 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "typescript": "^5.2.2",
-    "vite": "^5.1.0"
+    "vite": "^5.1.0",
+    "electron-builder": "^24.13.1"
+  },
+  "build": {
+    "appId": "com.example.electronreact",
+    "productName": "ElectronReactApp",
+    "directories": {
+      "output": "release",
+      "buildResources": "assets"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "asar": true,
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icons/app.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "ElectronReactApp"
+    }
   }
 }

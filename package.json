@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Electron React TypeScript App",
   "author": "wplay",
-  "main": "dist/main.js",
+  "main": "dist/main/main.js",
   "license": "MIT",
   "scripts": {
     "start": "electron .",

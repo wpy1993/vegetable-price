@@ -24,14 +24,38 @@ function createWindow() {
     mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"));
   }
 
-  // 注册快捷键
-  globalShortcut.register("Alt+Left", () => {
-    mainWindow?.webContents.goBack();
-  });
+  // 注册快捷键的函数
+  const registerShortcuts = () => {
+    // 注册快捷键
+    globalShortcut.register("Alt+Left", () => {
+      mainWindow?.webContents.goBack();
+    });
 
-  globalShortcut.register("Alt+Right", () => {
-    mainWindow?.webContents.goForward();
-  });
+    globalShortcut.register("Alt+Right", () => {
+      mainWindow?.webContents.goForward();
+    });
+
+    // 添加打开开发者工具的快捷键（ctrl+i）
+    globalShortcut.register("CommandOrControl+I", () => {
+      mainWindow?.webContents.toggleDevTools();
+    });
+  };
+
+  // 注销快捷键的函数
+  const unregisterShortcuts = () => {
+    globalShortcut.unregister("Alt+Left");
+    globalShortcut.unregister("Alt+Right");
+    globalShortcut.unregister("CommandOrControl+I");
+  };
+
+  // 当窗口获得焦点时注册快捷键
+  mainWindow.on("focus", registerShortcuts);
+
+  // 当窗口失去焦点时注销快捷键
+  mainWindow.on("blur", unregisterShortcuts);
+
+  // 当窗口关闭时注销快捷键
+  mainWindow.on("close", unregisterShortcuts);
 
   // 监听渲染进程的导航请求
   ipcMain.on("nav-back", () => {

@@ -42,7 +42,7 @@
   },
   "build": {
     "appId": "com.example.electronreact",
-    "productName": "ElectronReactApp",
+    "productName": "蔬菜格式工具",
     "directories": {
       "output": "release",
       "buildResources": "assets"
@@ -61,7 +61,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "ElectronReactApp"
+      "shortcutName": "蔬菜格式工具"
     }
   }
 }

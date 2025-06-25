@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import XLSX from "xlsx";
+import * as ExcelJS from 'exceljs';
 import { excelUtils } from "../utils/excel";
 
 const ExcelSettings: React.FC = () => {
-  const [workbook, setWorkbook] = useState<XLSX.WorkBook | null>(null);
+  const [workbook, setWorkbook] = useState<ExcelJS.Workbook | null>(null);
 
   const [sheetList, setSheetList] = useState<string[]>([]);
 
@@ -11,36 +11,13 @@ const ExcelSettings: React.FC = () => {
 
   const handleImport = async () => {
     try {
-      const workbook: XLSX.WorkBook | null = await excelUtils.getTableData();
-      setWorkbook(workbook);
-      setSheetList(workbook?.SheetNames || []);
-      // if (workbook) {
-      //   excelUtils.analyzeAndExport(workbook);
-      // }
-
-      // 按行号和列标识排序
-      // const sortedCells = cells.sort((a, b) => {
-      //   if (a.row !== b.row) {
-      //     return a.row - b.row
-      //   }
-      //   return a.col.localeCompare(b.col)
-      // })
-
-      // console.log('sortedCells', sortedCells)
-
-      // // 打印每个单元格的信息
-      // sortedCells.forEach(cell => {
-      //   console.log(
-      //     `单元格 ${cell.address} (${cell.col}列, 第${cell.row}行): ${cell.value}`
-      //   )
-      // })
-
-      // // 示例：获取特定列的数据
-      // const columnB = cells.filter(cell => cell.col === 'B')
-      // console.log('\nB列的数据:')
-      // columnB.forEach(cell => {
-      //   console.log(`B${cell.row}: ${cell.value}`)
-      // })
+      const workbook = await excelUtils.getTableData();
+      if (workbook) {
+        setWorkbook(workbook);
+        setSheetList(workbook.worksheets.map(ws => ws.name));
+        setSheetIndexes([]);
+        console.log('workbook is', workbook);
+      }
     } catch (error) {
       console.error("Failed to import Excel:", error);
     }
@@ -82,7 +59,7 @@ const ExcelSettings: React.FC = () => {
   const handleBatchSetPrice = async () => {
     if (workbook && sheetIndexes.length > 0) {
       try {
-        const newWorkbook: XLSX.WorkBook = await excelUtils.batchSetPrice(workbook, sheetIndexes);
+        const newWorkbook = await excelUtils.batchSetPrice(workbook, sheetIndexes);
         setWorkbook(newWorkbook);
         console.log("批量价格设置完成");
       } catch (error) {

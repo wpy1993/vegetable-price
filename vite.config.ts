@@ -6,6 +6,17 @@ import { resolve } from 'path'
 export default defineConfig({
   base: './',
   plugins: [react()],
+  css: {
+    preprocessorOptions: {
+      less: {
+        javascriptEnabled: true, // 支持 less 中的 js 表达式
+        modifyVars: {
+          // 在这里自定义主题色等变量
+          // '@primary-color': '#1DA57A',
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       '@': resolve(__dirname, './src')

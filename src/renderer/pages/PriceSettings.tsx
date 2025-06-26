@@ -45,6 +45,10 @@ const PriceSettings: React.FC = () => {
   }, [])
 
   const handleAdd = async (values: { name: string; price: number }) => {
+    if (!values.name || !values.price) {
+      message.error('请输入菜品名称和价格')
+      return
+    }
     try {
       const newData = [...items, {
         id: Date.now(),

@@ -32,9 +32,9 @@ const ExcelSettings: React.FC = () => {
         setSheetIndexes([]);
         setChangeTimes(0);
         console.log('workbook is', workbook);
-        setLoading(false)
         message.success('Excel文件导入成功');
       }
+      setLoading(false)
     } catch (error) {
       setLoading(false)
       console.error("Failed to import Excel:", error);

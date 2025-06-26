@@ -148,6 +148,7 @@ class ExcelUtils {
         return;
       }
 
+      workbook.calcProperties.fullCalcOnLoad = true;
       // 使用 ExcelJS 写入到 Buffer
       const buffer = await workbook.xlsx.writeBuffer();
 

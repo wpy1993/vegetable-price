@@ -211,7 +211,6 @@ const PriceSettings: React.FC = () => {
           <Form
             form={form}
             name="addPrice"
-            onFinish={handleAdd}
             layout="inline"
             style={{ marginBottom: 24 }}
           >
@@ -235,7 +234,7 @@ const PriceSettings: React.FC = () => {
             </Form.Item>
 
             <Form.Item>
-              <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
+              <Button type="primary" htmlType="submit" onClick={() => { handleAdd(form.getFieldsValue()) }} icon={<PlusOutlined />}>
                 添加
               </Button>
             </Form.Item>
